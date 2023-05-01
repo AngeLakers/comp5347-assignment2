@@ -19,7 +19,7 @@
         <input type="password" id="password" v-model="password" required>
       </div>
       <div>
-        <button type="submit">Sign up</button>
+        <button type="submit" @click="signUp">Sign up</button>
       </div>
     </form>
   </div>
@@ -29,6 +29,7 @@
 
 export default {
   name: "Register",
+
   data() {
     return {
       firstName: "",
@@ -40,16 +41,19 @@ export default {
       firstName: [
         {required: true, message: "Please enter first name", trigger: "blur"},
       ],
-          lastName:
+          lastName
+    :
       [
         {required: true, message: "Please enter last name", trigger: "blur"},
       ],
-          email:
+          email
+    :
       [
         {required: true, message: "Please enter email", trigger: "blur"},
         {type: "email", message: "Please enter a valid email", trigger: "blur"},
       ],
-          password:
+          password
+    :
       [
         {required: true, message: "Please enter password", trigger: "blur"},
         {min: 6, message: "Password must be at least 6 characters", trigger: "blur"},
@@ -62,6 +66,9 @@ export default {
 
     }
 
+  },
+
+
     methods: {
       register()
       {
@@ -70,48 +77,53 @@ export default {
         console.log("Last Name: " + this.lastName);
         console.log("Email: " + this.email);
         console.log("Password: " + this.password);
-      }
-    }
+      },
 
-    signup()
-    {
-      this.$refs.registerForm.validate(async (valid) => {
-        if (valid) {
+      signUp(){
+        this.$refs.registerForm.validate(async (valid) => {
+          if (valid) {
 
-          // 处理注册逻辑
-          const userData = {
-            firstName: this.form.firstName,
-            lastName: this.form.lastName,
-            email: this.form.email,
-            password: this.form.password,
-          };
+            // 处理注册逻辑
+            const userData = {
+              firstName: this.form.firstName,
+              lastName: this.form.lastName,
+              email: this.form.email,
+              password: this.form.password,
+            };
 
-          const result = await this.postRequest("/signup", userData);
+            const result = await this.postRequest("/signup", userData);
 
-          if (result.status === 200) {
-            this.$message({
-              message: "Sign up successfully",
-              type: "success",
-            });
-            await this.$router.push("/login");
+            if (result.status === 200) {
+              this.$message({
+                message: "Sign up successfully",
+                type: "success",
+              });
+              await this.$router.push("/login");
+            } else {
+              this.$message({
+                message: "Sign up failed",
+                type: "error",
+              });
+            }
+
           } else {
             this.$message({
-              message: "Sign up failed",
               type: "error",
+              message: "Sign up failed since validation failed!"
             });
+            return false;
           }
+        });
+      }
 
-        } else {
-          this.$message({
-            type: "error",
-            message: "Sign up failed since validation failed!"
-          });
-          return false;
-        }
-      });
+
+
+
     }
 
-  }
+
+
+
 }
 </script>
 
