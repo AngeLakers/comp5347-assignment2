@@ -40,19 +40,16 @@ export default {
       firstName: [
         {required: true, message: "Please enter first name", trigger: "blur"},
       ],
-          lastName
-    :
+          lastName:
       [
         {required: true, message: "Please enter last name", trigger: "blur"},
       ],
-          email
-    :
+          email:
       [
         {required: true, message: "Please enter email", trigger: "blur"},
         {type: "email", message: "Please enter a valid email", trigger: "blur"},
       ],
-          password
-    :
+          password:
       [
         {required: true, message: "Please enter password", trigger: "blur"},
         {min: 6, message: "Password must be at least 6 characters", trigger: "blur"},
