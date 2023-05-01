@@ -1,12 +1,21 @@
 <template>
   <div>
-    <h1>Main Page</h1>
+    <header>
+
+    </header>
+
+    <main>
+      <router-view></router-view>
+    </main>
+
+    <footer>
+
+    </footer>
   </div>
 </template>
-
 <script>
 export default {
-  name: "MainPage"
+  name: "Main"
 }
 </script>
 
