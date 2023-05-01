@@ -77,6 +77,41 @@ app.post("/login", async (req, res) => {
     res.json({ token });
 });
 
+app.post("/reset-password-api", async (req, res) => {
+    const user = await db.collection("User").findOne({ email: req.body.email });
+
+    if (!user) {
+        return res.status(404).send("User not found");
+    }else{
+
+        const newHashedPassword = await bcrypt.hash(req.body.password, 20);
+
+        try {
+            // Update the user's password in the database
+            await db.collection("User").updateOne({ email:req.body.email },
+                { $set: { password: newHashedPassword } } )
+
+
+            // Return a success response to the client
+            res.status(200).send({ message: 'Password reset successfully!' });
+        } catch (err) {
+            // If an error occurs, return an error response
+            res.status(500).send({ message: err.message });
+        }
+    }
+    //这里没太搞懂，用token
+    // const resetToken = crypto.randomBytes(20).toString("hex");
+
+    // await db.collection("passwordResetRequests").insertOne({
+    //     userId: user._id,
+    //     resetToken,
+    //     createdAt: new Date(),
+    // });
+
+    //await sendResetPasswordEmail(user.email, resetToken);
+    res.status(200).send("Reset password email sent");
+});
+
 
 app.listen(3000, () => {
     console.log("Server running on port 3000");
