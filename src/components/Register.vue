@@ -19,7 +19,7 @@
         <input type="password" id="password" v-model="password" required>
       </div>
       <div>
-        <button type="submit">Submit</button>
+        <button type="submit">Sign up</button>
       </div>
     </form>
   </div>
@@ -36,17 +36,86 @@ export default {
       email: "",
       password: "",
     };
-  },
-  methods: {
-    register() {
-      // 处理注册逻辑
-      console.log("First Name: " + this.firstName);
-      console.log("Last Name: " + this.lastName);
-      console.log("Email: " + this.email);
-      console.log("Password: " + this.password);
-    },
-  },
-};
+    rules: {
+      firstName: [
+        {required: true, message: "Please enter first name", trigger: "blur"},
+      ],
+          lastName
+    :
+      [
+        {required: true, message: "Please enter last name", trigger: "blur"},
+      ],
+          email
+    :
+      [
+        {required: true, message: "Please enter email", trigger: "blur"},
+        {type: "email", message: "Please enter a valid email", trigger: "blur"},
+      ],
+          password
+    :
+      [
+        {required: true, message: "Please enter password", trigger: "blur"},
+        {min: 6, message: "Password must be at least 6 characters", trigger: "blur"},
+        {
+          pattern: /^(?=.*[A-Z]).+$/, message: 'Password must contain at least one uppercase ' +
+              'letter', trigger: 'blur'
+        },
+      ]
+
+
+    }
+
+    methods: {
+      register()
+      {
+        // 处理注册逻辑
+        console.log("First Name: " + this.firstName);
+        console.log("Last Name: " + this.lastName);
+        console.log("Email: " + this.email);
+        console.log("Password: " + this.password);
+      }
+    }
+
+    signup()
+    {
+      this.$refs.registerForm.validate(async (valid) => {
+        if (valid) {
+
+          // 处理注册逻辑
+          const userData = {
+            firstName: this.form.firstName,
+            lastName: this.form.lastName,
+            email: this.form.email,
+            password: this.form.password,
+          };
+
+          const result = await this.postRequest("/signup", userData);
+
+          if (result.status === 200) {
+            this.$message({
+              message: "Sign up successfully",
+              type: "success",
+            });
+            await this.$router.push("/login");
+          } else {
+            this.$message({
+              message: "Sign up failed",
+              type: "error",
+            });
+          }
+
+        } else {
+          this.$message({
+            type: "error",
+            message: "Sign up failed since validation failed!"
+          });
+          return false;
+        }
+      });
+    }
+
+  }
+}
 </script>
 
 <style scoped>
