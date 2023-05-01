@@ -29,6 +29,7 @@ async function connectToDatabase() {
 }
 connectToDatabase();
 
+//signup
 app.post("/signup", async (req, res) => {
     // 检查电子邮件地址是否已被使用
     const existingUser = await db
@@ -55,5 +56,29 @@ app.post("/signup", async (req, res) => {
          res.status(500).send("Error creating user");
    }
 
+});
+
+app.post("/login", async (req, res) => {
+    const user = await db.collection("User").findOne({ email: req.body.username });
+
+    if (!user) {
+        return res.status(404).send("User not found");
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+        req.body.password,
+        user.password
+    );
+    if (!isPasswordValid) {
+        return res.status(401).send("Unauthorized");
+    }
+
+    const token = jwt.sign({ userId: user._id }, "your-secret-key");
+    res.json({ token });
+});
+
+
+app.listen(3000, () => {
+    console.log("Server running on port 3000");
 });
 

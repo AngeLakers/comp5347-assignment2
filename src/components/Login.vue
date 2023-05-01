@@ -11,7 +11,7 @@
         <input type="password" id="password" v-model="password" required>
       </div>
       <div>
-        <button @click.prevent="RegisterButtonClicked">Register</button>
+        <button @click.prevent="registerButtonClicked">Register</button>
         <button @click.prevent="loginButtonClicked">Login</button>
         <router-link to="/reset-password">Forgot your password?</router-link>
       </div>
