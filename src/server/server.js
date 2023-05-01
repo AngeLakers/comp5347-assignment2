@@ -57,4 +57,3 @@ app.post("/signup", async (req, res) => {
 
 });
 
-function hash
