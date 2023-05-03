@@ -13,7 +13,7 @@
       <div>
         <button @click.prevent="registerButtonClicked">Register</button>
         <button @click.prevent="loginButtonClicked">Login</button>
-        <router-link to="/reset-password">Forgot your password?</router-link>
+        <router-link to="/forgetPassword">Forgot your password?</router-link>
       </div>
     </form>
   </div>

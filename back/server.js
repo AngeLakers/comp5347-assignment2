@@ -9,7 +9,7 @@ const cors = require("cors");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
-// app.use(express.static("public"));
+ app.use(express.static("public"));
 const url = "mongodb://127.0.0.1:27017";
 const dbName = "Comp5347-assignment2";
 
@@ -28,6 +28,7 @@ async function connectToDatabase() {
 connectToDatabase();
 
 app.post("/signup", async (req, res) => {
+  console.log("Using a post request to signup");
   // 检查电子邮件地址是否已被使用
   const existingUser = await db
     .collection("User")
@@ -51,7 +52,7 @@ app.post("/signup", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  const user = await db.collection("User").findOne({ email: req.body.email });
+  const user = await db.collection("User").findOne({ email: req.body.username });
 
   if (!user) {
     return res.status(404).send("User not found");
@@ -69,23 +70,32 @@ app.post("/login", async (req, res) => {
   res.json({ token });
 });
 
-app.post("/reset-password", async (req, res) => {
-  const user = await db.collection("User").findOne({ email: req.body.email });
+app.post("/reset-password-api" , async (req, res) => {
 
-  if (!user) {
-    return res.status(404).send("User not found");
+  try {
+    const user = await db.collection("User").findOne({email: req.body.email});
+    if (!user) {
+      res.status(404).send('User not found');
+      return;
+    }
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    // const resetToken = crypto.randomBytes(20).toString("hex");
+
+    // await db.collection("passwordResetRequests").insertOne({
+    //   userId: user._id,
+    //   resetToken,
+    //   createdAt: new Date(),
+    // });
+
+    //await sendResetPasswordEmail(user.email, resetToken);
+    res.status(200).send("Reset password successfully");
+  }catch (error) {
+    console.error(error);
+    res.status(500).send("Error resetting password");
   }
-
-  const resetToken = crypto.randomBytes(20).toString("hex");
-
-  await db.collection("passwordResetRequests").insertOne({
-    userId: user._id,
-    resetToken,
-    createdAt: new Date(),
-  });
-
-  //await sendResetPasswordEmail(user.email, resetToken);
-  res.status(200).send("Reset password email sent");
 });
 
 app.post("/update-password", async (req, res) => {
@@ -110,28 +120,29 @@ app.post("/update-password", async (req, res) => {
   res.status(200).send("Password updated");
 });
 
+
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
 
-async function sendResetPasswordEmail(email, resetToken) {
-  // 创建一个 nodemailer 传输器
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: "x@gmail.com",
-      pass: "password",
-    },
-  });
-
-  // 设置电子邮件选项
-  const mailOptions = {
-    from: "your-email@gmail.com",
-    to: email,
-    subject: "Password Reset Request",
-    text: `Click the following link to reset your password: http://localhost:3000/reset-password/${resetToken}`,
-  };
-
-  // 发送电子邮件
-  await transporter.sendMail(mailOptions);
-}
+// async function sendResetPasswordEmail(email, resetToken) {
+//   // 创建一个 nodemailer 传输器
+//   const transporter = nodemailer.createTransport({
+//     service: "gmail",
+//     auth: {
+//       user: "x@gmail.com",
+//       pass: "password",
+//     },
+//   });
+//
+//   // 设置电子邮件选项
+//   const mailOptions = {
+//     from: "your-email@gmail.com",
+//     to: email,
+//     subject: "Password Reset Request",
+//     text: `Click the following link to reset your password: http://localhost:3000/reset-password/${resetToken}`,
+//   };
+//
+//   // 发送电子邮件
+//   await transporter.sendMail(mailOptions);
+// }

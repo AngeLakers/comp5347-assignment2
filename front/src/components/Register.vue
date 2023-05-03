@@ -1,28 +1,31 @@
 <template>
   <div class="register-container">
     <h1>Register</h1>
-    <form @submit.prevent="register">
-      <div>
-        <label for="first-name">First Name:</label>
-        <input type="text" id="first-name" v-model="firstName" required>
-      </div>
-      <div>
-        <label for="last-name">Last Name:</label>
-        <input type="text" id="last-name" v-model="lastName" required>
-      </div>
-      <div>
-        <label for="email">Email:</label>
-        <input type="email" id="email" v-model="email" required>
-      </div>
-      <div>
-        <label for="password">Password:</label>
-        <input type="password" id="password" v-model="password" required>
-      </div>
-      <div>
-        <button type="submit" @click="signUp">Sign up</button>
-      </div>
-    </form>
-
+    <el-form :model="form" ref="form" :rules="rules" label-width="80px">
+      <el-form-item label="firstName" prop="firstName">
+        <el-input v-model="form.firstName"></el-input>
+      </el-form-item>
+      <el-form-item label="LastName" prop="lastName">
+        <el-input v-model="form.lastName"></el-input>
+      </el-form-item>
+      <el-form-item label="Email" prop="email">
+        <el-input v-model="form.email"></el-input>
+      </el-form-item>
+      <el-form-item label="Password" prop="password">
+        <el-input v-model="form.password" type="password"
+                  show-password></el-input>
+      </el-form-item>
+      <el-form-item label="Confirm Password" prop="passwordConfirm">
+        <el-input v-model="form.passwordConfirm" type="password"
+                  show-password></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="signUp">Register</el-button>
+      </el-form-item>
+    </el-form>
+    <div>
+      <router-link to="/forgetPassword">Forgot Password?</router-link>
+    </div>
   </div>
 </template>
 
@@ -36,27 +39,40 @@ export default {
         lastName: "",
         email: "",
         password: "",
+        passwordConfirm: "",
       },
+
       rules: {
-        firstName: [
-          { required: true, message: "Please enter first name", trigger: "blur" },
-        ],
-        lastName: [
-          { required: true, message: "Please enter last name", trigger: "blur" },
-        ],
+        firstName: [{ required: true, message: "First name is required", trigger: "blur" }],
+        LastName: [{ required: true, message: "Last name is required", trigger: "blur" }],
         email: [
-          { required: true, message: "Please enter email", trigger: "blur" },
-          { type: "email", message: "Please enter a valid email", trigger: "blur" },
+          { required: true, message: "Email is required", trigger: "blur" },
+          { type: "email", message: "Invalid email format", trigger: "blur" },
         ],
         password: [
-          { required: true, message: "Please enter password", trigger: "blur" },
+          { required: true, message: "Password is required", trigger: "blur" },
           {
-            pattern: /^(?=.*[A-Z]).+$/, message: 'Password must contain at least one uppercase ' +
-              'letter', trigger: 'blur'
+            pattern: /^(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{6,}$/,
+            message:
+              "Password must contain at least 6 characters including one uppercase letter and one number",
+            trigger: "blur",
           },
-          { min: 6, message: "Password must be at least 6 characters", trigger: "blur" },
+        ],
+        passwordConfirm: [
+          { required: true, message: "Please confirm your password", trigger: "blur"},
+          {
+            validator: (rule, value, callback) => {
+              if (value !== this.form.password) {
+                callback(new Error("Passwords do not match"));
+              } else {
+                callback();
+              }
+            },
+            trigger: "blur",
+          },
         ],
       },
+
     };
   },
   methods: {

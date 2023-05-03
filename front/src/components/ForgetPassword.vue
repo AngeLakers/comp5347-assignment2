@@ -1,7 +1,9 @@
 <template>
   <div>
+  <div>
     <h1>Forget Password</h1>
   </div>
+  <div>
   <form @submit.prevent="resetPassword">
     <div>
       <label>Email:</label>
@@ -17,7 +19,8 @@
     </div>
     <button type="submit">Reset password</button>
   </form>
-
+ </div>
+    </div>
 </template>
 
 <script>

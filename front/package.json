@@ -1,12 +1,12 @@
 {
-  "name": "phone-web",
+  "name": "webapplication",
   "version": "1.0.0",
   "description": "A Vue.js project",
-  "author": "",
+  "author": "neliu",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
-    "start": "npm run dev",
+    "start": "npm run dev ",
     "unit": "jest --config test/unit/jest.conf.js --coverage",
     "test": "npm run unit",
     "build": "node build/build.js"
