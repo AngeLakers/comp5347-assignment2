@@ -61,12 +61,18 @@ let user = response.data;
       try {
         // validate current password
         const response = await this.postRequest("/api/updateFile", {
-          email: this.form.email,
+
           password: this.currentPassword,
-          token: sessionStorage.getItem("token"),
+
         });
         if (!response.data.success) {
           throw new Error("Incorrect password");
+
+        } else {
+          this.$message({
+            type: "success",
+            message: "Password confirmed",
+          });
         }
 
         // send updated data to server for saving
@@ -76,14 +82,18 @@ let user = response.data;
           email: this.form.email,
 
         };
-        await this.putRequest("/api/users", userData);
+        const response1 = await this.putRequest("/api/users", userData);
+        if (response1.status !== 200) {
+          throw new Error("Error updating profile");
+        }else{
+          this.$message({
+            type: "success",
+            message: "Profile updated successfully",
+          });
+        }
 
-        // show success message after saving
-        this.$message({
-          type: "success",
-          message: "Profile updated successfully",
-        });
       } catch (error) {
+        console.log(error);
         this.$message.error(error.message);
       }
     },

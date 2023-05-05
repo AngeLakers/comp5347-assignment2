@@ -110,27 +110,8 @@ app.post("/api/resetPassword" , async (req, res) => {
   }
 });
 
-app.post("/update-password", async (req, res) => {
-  const { resetToken, newPassword } = req.body;
 
-  const passwordResetRequest = await db
-    .collection("passwordResetRequests")
-    .findOne({ resetToken });
 
-  if (!passwordResetRequest) {
-    return res.status(404).send("Invalid reset token");
-  }
-
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
-  await db
-    .collection("User")
-    .updateOne(
-      { _id: passwordResetRequest.userId },
-      { $set: { password: hashedPassword } }
-    );
-
-  res.status(200).send("Password updated");
-});
 
 app.get("/api/users", async (req, res) => {
   try {
@@ -150,6 +131,74 @@ app.get("/api/users", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 
+});
+app.put ("/api/users", async (req, res) => {
+try {
+  let recevingtoken = req.headers.authorization;
+  const decoded = jwt.verify(recevingtoken, process.env.JWT_SECRET);
+  const userId = decoded.userId;
+  let user = await db.collection('User').findOne({ _id: new ObjectId(userId) });
+  const result = await db.collection('User').updateOne(
+      { _id: new ObjectId(userId) },{$set: {firstName: req.body.firstName, lastName: req.body.lastName, email: req.body.email}});
+  if (result.modifiedCount === 1) {
+    res.status(200).json( {success: true});
+  } else {
+    res.status(404).json({message: "User not found"});
+  }
+} catch (error) {
+    console.error(error);
+    res.status(500).json({message: "Internal server error"});
+}
+
+
+
+}
+);
+app.post ("/api/updateFile", async (req, res) => {
+  try {
+    let recevingtoken = req.headers.authorization;
+    const decoded = jwt.verify(recevingtoken, process.env.JWT_SECRET);
+    const userId = decoded.userId;
+    let user = await db.collection('User').findOne({_id: new ObjectId(userId)});
+    const isPasswordValid = await bcrypt.compare(
+        req.body.password,
+        user.password
+    );
+    if (!isPasswordValid) {
+
+      res.json({success: false});
+
+    } else {
+      res.json({success: true});
+    }
+  } catch (error) {
+  req.status(500).json({message: "Internal server error"});
+  }
+
+
+});
+
+
+app.post("/update-password", async (req, res) => {
+  const { resetToken, newPassword } = req.body;
+
+  const passwordResetRequest = await db
+      .collection("passwordResetRequests")
+      .findOne({ resetToken });
+
+  if (!passwordResetRequest) {
+    return res.status(404).send("Invalid reset token");
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  await db
+      .collection("User")
+      .updateOne(
+          { _id: passwordResetRequest.userId },
+          { $set: { password: hashedPassword } }
+      );
+
+  res.status(200).send("Password updated");
 });
 
 
