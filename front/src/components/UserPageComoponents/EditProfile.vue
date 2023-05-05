@@ -43,8 +43,10 @@ export default {
 
       const response = await this.getRequest("/api/users", null
       );
-      this.form = response.data.user;
-      console.log(response.data.user);
+let user = response.data;
+      this.form.firstName = user.firstName;
+      this.form.lastName = user.lastName;
+      this.form.email = user.email;
     } catch (error) {
       console.log(error);
       this.$message.error(error.message);

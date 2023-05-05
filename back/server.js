@@ -8,6 +8,7 @@ const app = express();
 const cors = require("cors");
 const passport = require('passport');
 const json = require("body-parser/lib/types/json");
+const {ObjectId} = require("mongodb");
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 
@@ -136,22 +137,17 @@ app.get("/api/users", async (req, res) => {
 
 
    let recevingtoken = req.headers.authorization;
-    console.log(recevingtoken);
     const decoded = jwt.verify(recevingtoken, process.env.JWT_SECRET);
-
     const userId = decoded.userId;
-    console.log(userId);
+    let user = await db.collection('User').findOne({ _id: new ObjectId(userId) });
 
-   const user = await db.collection("User").findOne({ _id: userId });
-    if (!user) {
-      return res.status(404).send("User not found");
-    }
+    console.log(user);
     res.json(user);
-
 
 
   } catch (error) {
     console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 
 });

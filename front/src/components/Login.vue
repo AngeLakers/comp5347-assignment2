@@ -47,7 +47,6 @@ export default {
         const response = await this.postRequest("/api/login", this.loginData);
         const token = response.data.token;
         sessionStorage.setItem("token", token);
-        console.log(token);
 
         await this.$router.push("/userPage");
       }catch (error) {
