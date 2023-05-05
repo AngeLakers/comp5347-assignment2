@@ -1,25 +1,14 @@
 <template>
-  <div>
-  <div>
-    <h1>Forget Password</h1>
-  </div>
-  <div>
-  <form @submit.prevent="resetPassword">
-    <div>
-      <label>Email:</label>
-      <input type="email" v-model="email">
-    </div>
-    <div>
-      <label>New password:</label>
-      <input type="password" v-model="password1">
-    </div>
-    <div>
-      <label>Confirm new password:</label>
-      <input type="password" v-model="password2">
-    </div>
-    <button type="submit">Reset password</button>
-  </form>
- </div>
+
+    <div class="forgot-password">
+      <el-form ref="form" :model="form" :rules="rules" label-width="100px" class="forgot-password-form">
+        <el-form-item label="Email" prop="email">
+          <el-input v-model="form.email"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submitForm">Reset Password</el-button>
+        </el-form-item>
+      </el-form>
     </div>
 </template>
 
@@ -30,34 +19,55 @@ export default {
   name: "Forget-password",
   data() {
     return {
-      email: '',
-      password1: '',
-      password2: ''
-    }
+      form: {
+        email: "",
+      },
+      rules: {
+        email: [
+          { required: true, message: "Please enter your email address", trigger: "blur" },
+          { type: "email", message: "Please enter a valid email address", trigger: "blur" },
+        ],
+      },
+    };
   },
   methods: {
-    async resetPassword() {
-      const userData = {
-        email: this.email,
-        password1: this.password1,
-        password2: this.password2
+    async submitForm() {
+      const form = {
+        email: this.form.email,
       };
 
-      try {
-        const response = await this.postRequest("/reset-password-api", userData);
-        //在重置密码页面中，用户需要提供有效/注册的电子邮件地址。如果提供的电子邮件地址有效（在数据库中），
-        // Web 应用程序将通过电子邮件发送一个链接以重置密码。单击此链接后，它将重定向到 Web 应用程序页面，需要处理
+      this.$refs.form.validate((valid) => {
+        if (valid) {
 
-        if (response.status === 200) {
-          alert("Reset password successfully")
-          await this.$router.push("/");
+          // Call API to reset password and show success message
+          this.$message({
+            type: "success",
+            message: "An email has been sent to your account with instructions to reset your password",
+          });
+        } else {
+          // Show error message for invalid form input
+          this.$message({
+            type: "error",
+            message: "Please fix the form errors before submitting",
+          });
         }
+      });
 
-
-      } catch (error) {
-        console.log(error);
-
-      }
+      // try {
+      //   const response = await this.postRequest("/reset-password-api", form);
+      //   //在重置密码页面中，用户需要提供有效/注册的电子邮件地址。如果提供的电子邮件地址有效（在数据库中），
+      //   // Web 应用程序将通过电子邮件发送一个链接以重置密码。单击此链接后，它将重定向到 Web 应用程序页面，需要处理
+      //
+      //   if (response.status === 200) {
+      //     alert("Reset password successfully")
+      //     await this.$router.push("/");
+      //   }
+      //
+      //
+      // } catch (error) {
+      //   console.log(error);
+      //
+      // }
     }
   }
 
@@ -66,5 +76,14 @@ export default {
 </script>
 
 <style scoped>
+.forgot-password {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
 
+.forgot-password-form {
+  width: 400px;
+}
 </style>

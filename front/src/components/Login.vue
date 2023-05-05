@@ -42,7 +42,7 @@ export default {
       };
 
       try {
-        const response = await this.postRequest("/login", userData);
+        const response = await this.postRequest("/api/login", userData);
         const {token} = response.data;
         sessionStorage.setItem("token", token);
         await this.$router.push("/");

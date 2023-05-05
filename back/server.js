@@ -27,7 +27,7 @@ async function connectToDatabase() {
 
 connectToDatabase();
 
-app.post("/signup", async (req, res) => {
+app.post("/api/signup", async (req, res) => {
   console.log("Using a post request to signup");
   // 检查电子邮件地址是否已被使用
   const existingUser = await db
@@ -51,7 +51,7 @@ app.post("/signup", async (req, res) => {
   res.status(200).send("User created");
 });
 
-app.post("/login", async (req, res) => {
+app.post("/api/login", async (req, res) => {
   const user = await db.collection("User").findOne({ email: req.body.username });
 
   if (!user) {
@@ -70,7 +70,7 @@ app.post("/login", async (req, res) => {
   res.json({ token });
 });
 
-app.post("/reset-password-api" , async (req, res) => {
+app.post("/api/resetPassword" , async (req, res) => {
 
   try {
     const user = await db.collection("User").findOne({email: req.body.email});

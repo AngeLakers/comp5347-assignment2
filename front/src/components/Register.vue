@@ -23,9 +23,7 @@
         <el-button type="primary" @click="signUp">Register</el-button>
       </el-form-item>
     </el-form>
-    <div>
-      <router-link to="/forgetPassword">Forgot Password?</router-link>
-    </div>
+
   </div>
 </template>
 
@@ -86,7 +84,7 @@ export default {
             password: this.form.password,
           };
 
-          const result = await this.postRequest("/signup", userData);
+          const result = await this.postRequest("/api/signup", userData);
           if (result.status === 200) {
             this.$message({
               message: "Sign up successfully",
