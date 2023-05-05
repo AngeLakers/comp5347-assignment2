@@ -6,10 +6,10 @@ let my_axios = axios.create({
 })
 
 my_axios.interceptors.request.use(config => {
-  // // 如果存在token，请求携带这个token
-  // if (window.sessionStorage.getItem('tokenStr')) {
-  //   config.headers['Authorization'] = window.sessionStorage.getItem('tokenStr')
-  // }
+  // 如果存在token，请求携带这个token
+  if (window.sessionStorage.getItem('token')) {
+    config.headers['Authorization'] = window.sessionStorage.getItem('token')
+  }
   return config
 }, error => {
   console.log(error)
@@ -31,11 +31,12 @@ export const putRequest = (url, params) => {
   })
 }
 
-export const getRequest = (url, params) => {
+export const getRequest = (url,  params) => {
   return my_axios({
     method: 'get',
     url: `${url}`,
     data: params
+
   })
 }
 

@@ -6,12 +6,22 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const app = express();
 const cors = require("cors");
+const passport = require('passport');
+const json = require("body-parser/lib/types/json");
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
+
+require('dotenv').config();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
  app.use(express.static("public"));
 const url = "mongodb://127.0.0.1:27017";
 const dbName = "Comp5347-assignment2";
+const expirationTime = 7200;
+const secret = process.env.JWT_SECRET;
+
+
 
 let db;
 
@@ -28,7 +38,7 @@ async function connectToDatabase() {
 connectToDatabase();
 
 app.post("/api/signup", async (req, res) => {
-  console.log("Using a post request to signup");
+
   // 检查电子邮件地址是否已被使用
   const existingUser = await db
     .collection("User")
@@ -65,8 +75,9 @@ app.post("/api/login", async (req, res) => {
   if (!isPasswordValid) {
     return res.status(401).send("Unauthorized");
   }
+  const payload = { userId: user._id };
 
-  const token = jwt.sign({ userId: user._id }, "your-secret-key");
+  let token = jwt.sign(payload, secret, {expiresIn: expirationTime});
   res.json({ token });
 });
 
@@ -119,6 +130,32 @@ app.post("/update-password", async (req, res) => {
 
   res.status(200).send("Password updated");
 });
+
+app.get("/api/users", async (req, res) => {
+  try {
+
+
+   let recevingtoken = req.headers.authorization;
+    console.log(recevingtoken);
+    const decoded = jwt.verify(recevingtoken, process.env.JWT_SECRET);
+
+    const userId = decoded.userId;
+    console.log(userId);
+
+   const user = await db.collection("User").findOne({ _id: userId });
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+    res.json(user);
+
+
+
+  } catch (error) {
+    console.error(error);
+  }
+
+});
+
 
 
 app.listen(3000, () => {

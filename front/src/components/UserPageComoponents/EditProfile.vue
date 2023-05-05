@@ -31,19 +31,37 @@ export default {
         firstName: "",
         lastName: "",
         email: "",
+
       },
       currentPassword: "",
+
+
     };
   },
+  async mounted() {
+    try {
+
+      const response = await this.getRequest("/api/users", null
+      );
+      this.form = response.data.user;
+      console.log(response.data.user);
+    } catch (error) {
+      console.log(error);
+      this.$message.error(error.message);
+    }
+  },
+
 
   methods: {
+
     async onUpdate() {
 
       try {
         // validate current password
-        const response = await this.postRequest("/api/auth", {
+        const response = await this.postRequest("/api/updateFile", {
           email: this.form.email,
           password: this.currentPassword,
+          token: sessionStorage.getItem("token"),
         });
         if (!response.data.success) {
           throw new Error("Incorrect password");
@@ -54,6 +72,7 @@ export default {
           firstName: this.form.firstName,
           lastName: this.form.lastName,
           email: this.form.email,
+
         };
         await this.putRequest("/api/users", userData);
 

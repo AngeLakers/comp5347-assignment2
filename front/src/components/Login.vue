@@ -1,21 +1,18 @@
 <template>
-  <div class="login-container">
-    <h1>Login</h1>
-    <form @submit.prevent="login">
-      <div>
-        <label for="username">Username:</label>
-        <input type="text" id="username" v-model="username" required>
-      </div>
-      <div>
-        <label for="password">Password:</label>
-        <input type="password" id="password" v-model="password" required>
-      </div>
-      <div>
-        <button @click.prevent="registerButtonClicked">Register</button>
-        <button @click.prevent="loginButtonClicked">Login</button>
-        <router-link to="/forgetPassword">Forgot your password?</router-link>
-      </div>
-    </form>
+  <div>
+  <el-form ref="loginForm" :model="loginData" :rules="loginRules" label-width="120px" class="login-form">
+    <el-form-item label="Username" prop="username">
+      <el-input v-model="loginData.username" autocomplete="off"></el-input>
+    </el-form-item>
+    <el-form-item label="Password" prop="password">
+      <el-input type="password" v-model="loginData.password" autocomplete="off" show-password></el-input>
+    </el-form-item>
+    <el-form-item>
+
+      <el-button type="primary" @click="login" :loading="loginLoading">Login</el-button>
+    </el-form-item>
+  </el-form>
+  <el-button type="primary" @click="registerButtonClicked">Register</el-button>
   </div>
 </template>
 <script>
@@ -23,10 +20,18 @@ export default {
   name: "Login",
 
   data() {
-    return {
-      username: '',
-      password: ''
-    }
+    return{
+      loginData: {
+        username: "",
+        password: ""
+      },
+      loginRules: {
+        username: [{ required: true, message: "Please enter your username", trigger: "blur" }],
+        password: [{ required: true, message: "Please enter your password", trigger: "blur" }]
+      },
+      loginLoading: false
+    };
+
 
   },
 
@@ -35,26 +40,28 @@ export default {
       this.$router.push("/register");
     },
 
-    async loginButtonClicked() {
-      const userData = {
-        username: this.form.username,
-        password: this.form.password,
-      };
-
+    async login() {
       try {
-        const response = await this.postRequest("/api/login", userData);
-        const {token} = response.data;
+        await this.$refs.loginForm.validate();
+        this.loginLoading = true;
+        const response = await this.postRequest("/api/login", this.loginData);
+        const token = response.data.token;
         sessionStorage.setItem("token", token);
-        await this.$router.push("/");
+        console.log(token);
 
-
-      } catch (error) {
+        await this.$router.push("/userPage");
+      }catch (error) {
         console.log(error);
         this.$message({
-          message: "Login failed",
+          message: "Failed to log in, please check your username and password"  ,
           type: "error",
         });
+      }finally {
+        this.loginLoading = false;
       }
+
+
+
 
 
     }
@@ -64,16 +71,11 @@ export default {
 
 <style scoped>
 
-.login-container {
-  width: 300px;
+
+.login-form {
+  max-width: 400px;
   margin: auto;
-  text-align: center;
-  border: 1px solid #ccc;
-  padding: 20px;
+  margin-top: 100px;
 }
 
-.login-container h1 {
-  font-size: 24px;
-  margin-bottom: 20px;
-}
 </style>
