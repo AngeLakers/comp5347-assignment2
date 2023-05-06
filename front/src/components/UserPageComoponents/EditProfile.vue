@@ -44,8 +44,8 @@ export default {
       const response = await this.getRequest("/api/users", null
       );
 let user = response.data;
-      this.form.firstName = user.firstName;
-      this.form.lastName = user.lastName;
+      this.form.firstName = user.firstname;
+      this.form.lastName = user.lastname;
       this.form.email = user.email;
     } catch (error) {
       console.log(error);
@@ -82,7 +82,9 @@ let user = response.data;
           email: this.form.email,
 
         };
+        console.log(userData);
         const response1 = await this.putRequest("/api/users", userData);
+
         if (response1.status !== 200) {
           throw new Error("Error updating profile");
         }else{

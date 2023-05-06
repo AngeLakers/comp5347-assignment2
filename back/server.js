@@ -11,6 +11,8 @@ const json = require("body-parser/lib/types/json");
 const {ObjectId} = require("mongodb");
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 require('dotenv').config();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -22,6 +24,29 @@ const dbName = "Comp5347-assignment2";
 const expirationTime = 7200;
 const secret = process.env.JWT_SECRET;
 
+const reviewSchema = new Schema({
+  reviewer: { type: Schema.Types.ObjectId, ref: 'User' },
+  rating: Number,
+  comment: String
+});
+
+const phoneSchema = new Schema({
+  title: String,
+  brand: String,
+  image: String,
+  stock: Number,
+  seller: { type: Schema.Types.ObjectId, ref: 'User' },
+  price: Number,
+  reviews: [reviewSchema]
+});
+const userSchema = new mongoose.Schema({
+  firstName: String,
+  lastName: String,
+  email: String,
+  password:  String,
+});
+const Phone = mongoose.model('Phone', phoneSchema);
+
 
 
 let db;
@@ -29,8 +54,13 @@ let db;
 async function connectToDatabase() {
   try {
     const client = await MongoClient.connect(url, { useUnifiedTopology: true });
-    console.log("Connected to Database");
+    console.log("Connected correctly to server");
     db = client.db(dbName);
+    mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+        .then(() => console.log('MongoDB Connected...'))
+        .catch((err) => console.log(err));
+
+
   } catch (error) {
     console.error("Error connecting to Database:", error);
   }
@@ -73,6 +103,7 @@ app.post("/api/login", async (req, res) => {
     req.body.password,
     user.password
   );
+
   if (!isPasswordValid) {
     return res.status(401).send("Unauthorized");
   }
@@ -110,6 +141,31 @@ app.post("/api/resetPassword" , async (req, res) => {
   }
 });
 
+app.get("/api/comments", async (req, res) => {
+  try {
+    let recevingtoken = req.headers.authorization;
+    const decoded = jwt.verify(recevingtoken, process.env.JWT_SECRET);
+    const userId = decoded.userId;
+
+    const reviews = await db.collection("Phone").aggregate([
+      { $match: { seller: userId } },
+      { $unwind: "$reviews" },
+      { $replaceRoot: { newRoot: "$reviews" } },
+    ]).toArray();
+    console.log(userId);
+
+
+
+
+
+    res.json(reviews);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+
+})
+
 
 
 
@@ -122,7 +178,6 @@ app.get("/api/users", async (req, res) => {
     const userId = decoded.userId;
     let user = await db.collection('User').findOne({ _id: new ObjectId(userId) });
 
-    console.log(user);
     res.json(user);
 
 
@@ -137,13 +192,12 @@ try {
   let recevingtoken = req.headers.authorization;
   const decoded = jwt.verify(recevingtoken, process.env.JWT_SECRET);
   const userId = decoded.userId;
-  let user = await db.collection('User').findOne({ _id: new ObjectId(userId) });
   const result = await db.collection('User').updateOne(
-      { _id: new ObjectId(userId) },{$set: {firstName: req.body.firstName, lastName: req.body.lastName, email: req.body.email}});
+      { _id: new ObjectId(userId) },{$set:{firstname:req.body.firstName, lastname:req.body.lastName, email: req.body.email}});
   if (result.modifiedCount === 1) {
     res.status(200).json( {success: true});
   } else {
-    res.status(404).json({message: "User not found"});
+    res.status(404).json({message: "Update failed"});
   }
 } catch (error) {
     console.error(error);
