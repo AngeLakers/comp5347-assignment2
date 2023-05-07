@@ -133,20 +133,49 @@ export default {
       });
     },
     async toggleListing(listing) {
+
       try {
-        await axios.put(`/api/listings/${listing._id}`, {enabled: listing.enabled});
+        listing.enabled = !listing.enabled;
+        const response =await this.putRequest(`/api/listings/${listing._id}`, {disabled: !listing.enabled});
+        response.status == 200 ? this.$message({
+          type: "success",
+          message: "Disabled updated successfully",
+
+        }) : this.$message({
+          type: "error",
+          message: "Error disable or able  a new phone",
+        });
       } catch (error) {
         console.error(error);
+        // 如果更新失败，我们需要还原开关状态
+        listing.enabled = !listing.enabled;
+        // 显示错误消息
+        this.$message.error('Failed to toggle listing');
+      }
+
+    },
+    async deleteListing(listing) {
+      try {
+        const response =await this.deleteRequest(`/api/deletelistings/${listing._id}`,null);
+        response.status == 200 ? this.$message({
+          type: "success",
+          message: "Delete successfully",
+
+        }) : this.$message({
+          type: "error",
+          message: "Error delete  a new phone",
+        });
+        this.listings.splice(this.listings.indexOf(listing), 1);
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          console.error('Phone not found');
+          // Handle 404 error
+        } else {
+          console.error(error);
+          // Handle other errors
+        }
       }
     },
-    // async deleteListing(listing) {
-    //   try {
-    //     await axios.delete(`/api/listings/${listing._id}`);
-    //     this.listings.splice(this.listings.indexOf(listing), 1);
-    //   } catch (error) {
-    //     console.error(error);
-    //   }
-    // },
     async fetchListings() {
       try {
         const response = await this.getRequest('/api/fetchlistings');

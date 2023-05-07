@@ -295,6 +295,47 @@ app.post("/update-password", async (req, res) => {
   res.status(200).send("Password updated");
 });
 
+app.put('/api/listings/:id', async (req, res) => {
+  const id = req.params.id;
+  const data = req.body;
+
+ try{ const result = await db.collection('Phone').updateOne(
+      { _id: new ObjectId(id) }, // 查询条件，根据列表项 ID 查找要更新的文档
+      { $set: data } // 更新操作，将传入的数据对象更新到数据库中
+  );
+
+  if (result.modifiedCount > 0) {
+    res.json({ success: true });
+  } else {
+    console.log('Phone not found');
+    res.status(404).send('Phone not found');
+  }
+
+} catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+}
+});
+
+app.delete('/api/deletelistings/:id', async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        const result = await db.collection('Phone').deleteOne({ _id: new ObjectId(id) });
+        if (result.deletedCount === 1) {
+        res.json({ success: true });
+        } else {
+            console.log('Phone not delete');
+        res.status(404).send('Phone not delete');
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+);
+
+
 
 
 app.listen(3000, () => {
