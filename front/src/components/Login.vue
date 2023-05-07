@@ -46,6 +46,7 @@ export default {
         this.loginLoading = true;
         const response = await this.postRequest("/api/login", this.loginData);
         const token = response.data.token;
+        sessionStorage.setItem('email', this.loginData.username);
         sessionStorage.setItem("token", token);
 
         await this.$router.push("/userPage");

@@ -12,6 +12,7 @@ const {ObjectId} = require("mongodb");
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const mongoose = require('mongoose');
+const {sendPasswordResetEmail, sendPasswordSuccessEmail} = require("./email");
 const Schema = mongoose.Schema;
 
 require('dotenv').config();
@@ -271,6 +272,52 @@ app.get("/api/fetchlistings", async (req, res) => {
     }
 });
 
+app.post('/api/changePassword', async(req, res) => {
+    // 从请求中获取目标电子邮件地址
+    const destinationEmail = req.body.email;
+    console.log(destinationEmail)
+    const emailExist = await db
+        .collection("User")
+        .findOne({email: destinationEmail});
+    if (!emailExist) {
+        return res.status(201).send("Email address is not exist");
+    }
+    // 调用sendPasswordResetEmail函数发送邮件
+    sendPasswordResetEmail(destinationEmail);
+
+
+    // 响应客户端
+    res.status(200).json({message: 'Password reset email has been sent.'});
+});
+
+app.post("/api/change_password_success", async (req, res) => {
+    const destinationEmail = req.body.email;
+    const newPassword = req.body.newPassword;
+    console.log(destinationEmail)
+    // 根据email查找用户，然后修改密码
+    const passwordResetRequest = await db
+        .collection("User")
+        .findOne({email: destinationEmail});
+    console.log(passwordResetRequest.email)
+
+    // if (!passwordResetRequest) {
+    //     return res.status(404).send("Invalid reset token");
+    // }
+
+    const hashedPassword =await bcrypt.hash(newPassword, 10);
+    await db
+        .collection("User")
+        .updateOne(
+            {email: passwordResetRequest.email},
+            {$set: {password: hashedPassword}}
+        );
+
+
+    sendPasswordSuccessEmail(destinationEmail);
+
+    res.status(200).json({message: 'Password reset email has been sent.'});
+
+});
 
 
 app.post("/update-password", async (req, res) => {

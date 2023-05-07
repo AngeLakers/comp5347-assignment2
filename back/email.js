@@ -54,7 +54,7 @@ const sendPasswordSuccessEmail = (destinationEmail) => {
 
     const params = {
         "FromEmailAddress": "test@comp5347email.cloud",
-        "ReplyToAddresses": "515478826@qq.com",
+        "ReplyToAddresses": "244554007@qq.com",
         "Destination": [
             destinationEmail
         ],

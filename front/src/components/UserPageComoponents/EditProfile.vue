@@ -1,18 +1,18 @@
 <template>
   <div>
     <h2>Edit Profile</h2>
-    <el-form ref="form" :model="form" label-width="100px">
+    <el-form ref="form" :model="form" label-width="200px">
       <el-form-item label="First Name">
-        <el-input v-model="form.firstName"></el-input>
+        <el-input v-model="form.firstName" class="form-input"></el-input>
       </el-form-item>
       <el-form-item label="Last Name">
-        <el-input v-model="form.lastName"></el-input>
+        <el-input v-model="form.lastName" class="form-input"></el-input>
       </el-form-item>
       <el-form-item label="Email">
-        <el-input v-model="form.email"></el-input>
+        <el-input v-model="form.email" class="form-input"></el-input>
       </el-form-item>
       <el-form-item label="Current Password">
-        <el-input v-model="currentPassword" type="password"></el-input>
+        <el-input v-model="currentPassword" type="password" class="form-input"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onUpdate">Update Profile</el-button>
@@ -92,6 +92,8 @@ let user = response.data;
             type: "success",
             message: "Profile updated successfully",
           });
+
+          sessionStorage.setItem('email', this.form.email);
         }
 
       } catch (error) {
@@ -105,5 +107,10 @@ let user = response.data;
 </script>
 
 <style scoped>
+
+
+.form-input {
+  width: 200px;
+}
 
 </style>
