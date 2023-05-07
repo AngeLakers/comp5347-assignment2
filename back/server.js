@@ -56,9 +56,9 @@ async function connectToDatabase() {
     const client = await MongoClient.connect(url, { useUnifiedTopology: true });
     console.log("Connected correctly to server");
     db = client.db(dbName);
-    mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
-        .then(() => console.log('MongoDB Connected...'))
-        .catch((err) => console.log(err));
+    // mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+    //     .then(() => console.log('MongoDB Connected'))
+
 
 
   } catch (error) {
@@ -231,6 +231,46 @@ app.post ("/api/updateFile", async (req, res) => {
 
 
 });
+app.post("/api/addlistings", async (req, res) => {
+
+  try {
+  let recevingtoken = req.headers.authorization;
+  const decoded = jwt.verify(recevingtoken, process.env.JWT_SECRET);
+  const userId = decoded.userId;
+    const listing = {
+      title: req.body.title,
+      brand: req.body.brand,
+      image: req.body.image,
+      stock: req.body.stock,
+      seller: userId, // Use the seller ID from JWT token
+      price: req.body.price
+    };
+
+ let phone =await db.collection("Phone").insertOne(listing);
+     res.status(200).send("Listing created");
+     console.log( "create phone success");
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({message: "Internal server error"});
+    }
+  });
+
+app.get("/api/fetchlistings", async (req, res) => {
+    try {
+      let recevingtoken = req.headers.authorization;
+      const decoded = jwt.verify(recevingtoken, process.env.JWT_SECRET);
+      const userId = decoded.userId;
+
+        const listings = await db.collection("Phone").find({seller: userId}).toArray();
+        res.json(listings);
+        console.log("fetch phone success");
+    }
+    catch (error) {
+          console.error(error);
+            res.status(500).json({ message: "Internal server error" });
+    }
+});
+
 
 
 app.post("/update-password", async (req, res) => {
