@@ -12,7 +12,7 @@
         <el-input v-model="form.email" class="form-input"></el-input>
       </el-form-item>
       <el-form-item label="Current Password">
-        <el-input v-model="currentPassword" type="password" class="form-input"></el-input>
+        <el-input v-model="currentPassword" type="password" class="form-input" show-password></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onUpdate">Update Profile</el-button>

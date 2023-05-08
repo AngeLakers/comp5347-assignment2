@@ -38,12 +38,26 @@ export default {
 
       this.$refs.form.validate((valid) => {
         if (valid) {
+          this.postRequest("/api/change_password", this.form).then((response) => {
+              console.log(response.status)
+              if (response.status === 200) {
+                // Call API to reset password and show success message
+                this.$message({
+                  type: "success",
+                  message: "An email has been sent to your account with instructions to reset your password",
+                });
 
-          // Call API to reset password and show success message
-          this.$message({
-            type: "success",
-            message: "An email has been sent to your account with instructions to reset your password",
-          });
+               sessionStorage.setItem("email", this.form.email);
+                localStorage.setItem("email", this.form.email);
+              } else {
+                this.$message({
+                  type: "error",
+                  message: "Email not found",
+                });
+              }
+            }
+          ).catch()
+
         } else {
           // Show error message for invalid form input
           this.$message({

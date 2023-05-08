@@ -1,10 +1,10 @@
 <template>
   <el-form :model="passwordForm" ref="passwordForm" label-width="200px ">
     <el-form-item label="Current Password" prop="currentPassword"  size="medium">
-      <el-input type="password" v-model="passwordForm.currentPassword" size="medium" class="input"></el-input>
+      <el-input type="password" v-model="passwordForm.currentPassword" size="medium" class="input" show-password></el-input>
     </el-form-item>
     <el-form-item label="New Password" prop="newPassword">
-      <el-input type="password" v-model="passwordForm.newPassword" size="medium" class="input"></el-input>
+      <el-input type="password" v-model="passwordForm.newPassword" size="medium" class="input" show-password></el-input>
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="submitForm">Change Password</el-button>
@@ -72,7 +72,12 @@ export default {
             type: "success",
             message: "email send successfully",
           });
-          this.postRequest("/api/change_password_success", this.passwordForm).then(
+          if (!this.passwordForm.email) {
+            const email = sessionStorage.getItem('email') || this.$route.query.email;
+            this.passwordForm.email = email || '';
+          }
+
+         await this.postRequest("/api/change_password_success", this.passwordForm).then(
 
             (response) => {
               console.log(response);

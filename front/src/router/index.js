@@ -7,6 +7,8 @@ import UserPage from "../components/UserPage";
 import ForgetPassword from "../components/ForgetPassword";
 import ManageList from "../components/UserPageComoponents/ManageList";
 
+import ResetPassword from "../components/ResetPassword";
+
 Vue.use(Router)
 
 export default new Router({
@@ -54,7 +56,12 @@ export default new Router({
       name: 'ListingPhone',
 
       component: ManageList
-    }
+
+    },
+
+    {path: '/userPage/changePassword',
+      name: 'resetPassword',
+      component: ResetPassword}
 
 
   ]

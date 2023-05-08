@@ -126,15 +126,6 @@ app.post("/api/resetPassword" , async (req, res) => {
     user.password = hashedPassword;
     await user.save();
 
-    // const resetToken = crypto.randomBytes(20).toString("hex");
-
-    // await db.collection("passwordResetRequests").insertOne({
-    //   userId: user._id,
-    //   resetToken,
-    //   createdAt: new Date(),
-    // });
-
-    //await sendResetPasswordEmail(user.email, resetToken);
     res.status(200).send("Reset password successfully");
   }catch (error) {
     console.error(error);
@@ -179,6 +170,7 @@ app.get("/api/users", async (req, res) => {
     const userId = decoded.userId;
     let user = await db.collection('User').findOne({ _id: new ObjectId(userId) });
 
+
     res.json(user);
 
 
@@ -193,6 +185,17 @@ try {
   let recevingtoken = req.headers.authorization;
   const decoded = jwt.verify(recevingtoken, process.env.JWT_SECRET);
   const userId = decoded.userId;
+
+  const existingUser = await db
+        .collection("User")
+        .findOne({ email: req.body.email });
+
+    if (existingUser) {
+        return res.status(201).send("Email address is already in use");
+    }
+
+
+
   const result = await db.collection('User').updateOne(
       { _id: new ObjectId(userId) },{$set:{firstname:req.body.firstName, lastname:req.body.lastName, email: req.body.email}});
   if (result.modifiedCount === 1) {
@@ -272,7 +275,7 @@ app.get("/api/fetchlistings", async (req, res) => {
     }
 });
 
-app.post('/api/changePassword', async(req, res) => {
+app.post('/api/change_password', async(req, res) => {
     // 从请求中获取目标电子邮件地址
     const destinationEmail = req.body.email;
     console.log(destinationEmail)
@@ -320,27 +323,7 @@ app.post("/api/change_password_success", async (req, res) => {
 });
 
 
-app.post("/update-password", async (req, res) => {
-  const { resetToken, newPassword } = req.body;
 
-  const passwordResetRequest = await db
-      .collection("passwordResetRequests")
-      .findOne({ resetToken });
-
-  if (!passwordResetRequest) {
-    return res.status(404).send("Invalid reset token");
-  }
-
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
-  await db
-      .collection("User")
-      .updateOne(
-          { _id: passwordResetRequest.userId },
-          { $set: { password: hashedPassword } }
-      );
-
-  res.status(200).send("Password updated");
-});
 
 app.put('/api/listings/:id', async (req, res) => {
   const id = req.params.id;

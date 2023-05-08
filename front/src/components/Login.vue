@@ -2,17 +2,27 @@
   <div>
   <el-form ref="loginForm" :model="loginData" :rules="loginRules" label-width="120px" class="login-form">
     <el-form-item label="Username" prop="username">
-      <el-input v-model="loginData.username" autocomplete="off"></el-input>
+      <el-input v-model="loginData.username" autocomplete="off"
+                size="medium"></el-input>
     </el-form-item>
     <el-form-item label="Password" prop="password">
-      <el-input type="password" v-model="loginData.password" autocomplete="off" show-password></el-input>
+      <el-input type="password" v-model="loginData.password" autocomplete="off" show-password
+                size="medium"></el-input>
     </el-form-item>
     <el-form-item>
-
       <el-button type="primary" @click="login" :loading="loginLoading">Login</el-button>
     </el-form-item>
+
+
+
   </el-form>
-  <el-button type="primary" @click="registerButtonClicked">Register</el-button>
+    <div class="forget-password-link">
+      <router-link to="/forgetPassword">Forgot your password?</router-link>
+      <el-button type="primary" @click="registerButtonClicked">Register</el-button>
+    </div>
+
+
+
   </div>
 </template>
 <script>
@@ -71,11 +81,10 @@ export default {
 
 <style scoped>
 
-
-.login-form {
-  max-width: 400px;
-  margin: auto;
-  margin-top: 100px;
+.el-input--medium {
+  width: 300px; /* 设置输入框的宽度 */
 }
+
+
 
 </style>
