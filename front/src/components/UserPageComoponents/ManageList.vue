@@ -68,7 +68,8 @@ export default {
         brand: '',
         image: '',
         stock: 0,
-        price: 0
+        price: 0,
+        enabled: true,
       },
       rules: {
         title: [{required: true, message: 'Please enter the title', trigger: 'blur'}],
@@ -132,11 +133,14 @@ export default {
         ;
       });
     },
-    async toggleListing(listing) {
-
+    async toggleListing(row) {
+      const id = row._id;
+      const enabled = row.enabled;
+      console.log(id);
       try {
-        listing.enabled = !listing.enabled;
-        const response =await this.putRequest(`/api/listings/${listing._id}`, {disabled: !listing.enabled});
+
+        const response =await this.putRequest(`/api/listings/toggle`, {id ,enabled});
+
         response.status == 200 ? this.$message({
           type: "success",
           message: "Disabled updated successfully",
@@ -148,7 +152,7 @@ export default {
       } catch (error) {
         console.error(error);
         // 如果更新失败，我们需要还原开关状态
-        listing.enabled = !listing.enabled;
+       row.enabled = !row.enabled;
         // 显示错误消息
         this.$message.error('Failed to toggle listing');
       }

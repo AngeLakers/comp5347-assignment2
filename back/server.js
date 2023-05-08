@@ -267,6 +267,7 @@ app.get("/api/fetchlistings", async (req, res) => {
 
         const listings = await db.collection("Phone").find({seller: userId}).toArray();
         res.json(listings);
+
         console.log("fetch phone success");
     }
     catch (error) {
@@ -325,21 +326,29 @@ app.post("/api/change_password_success", async (req, res) => {
 
 
 
-app.put('/api/listings/:id', async (req, res) => {
-  const id = req.params.id;
-  const data = req.body;
+app.put('/api/listings/toggle', async (req, res) => {
+  const id = req.body.id;
+ const enabled = req.body.enabled;
+console.log(id);
+console.log(enabled);
 
- try{ const result = await db.collection('Phone').updateOne(
-      { _id: new ObjectId(id) }, // 查询条件，根据列表项 ID 查找要更新的文档
-      { $set: data } // 更新操作，将传入的数据对象更新到数据库中
-  );
+ try{  const Phone = await db
+     .collection("Phone")
+     .findOne({ _id: new ObjectId(id) });
 
-  if (result.modifiedCount > 0) {
-    res.json({ success: true });
-  } else {
-    console.log('Phone not found');
-    res.status(404).send('Phone not found');
-  }
+     if (Phone) {
+         if (enabled==='true') {
+             // 如果 enabled 为 true，则删除 disabled 字段
+             await db.collection("Phone").updateOne({ _id: new ObjectId(id) }, { $unset: { disabled: "" } });
+         } else if (enabled==="false"){
+             await db.collection("Phone").updateOne({ _id: new ObjectId(id) }, { $set: { disabled: "" } });
+         }
+
+         // 保存更新后的用户文档
+
+            res.status(200).json({ success: true });
+     }
+
 
 } catch (error) {
     console.error(error);
