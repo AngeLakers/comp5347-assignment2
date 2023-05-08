@@ -237,25 +237,44 @@ app.post ("/api/updateFile", async (req, res) => {
 });
 app.post("/api/addlistings", async (req, res) => {
 
-  try {
+
   let recevingtoken = req.headers.authorization;
   const decoded = jwt.verify(recevingtoken, process.env.JWT_SECRET);
   const userId = decoded.userId;
-    const listing = {
-      title: req.body.title,
-      brand: req.body.brand,
-      image: req.body.image,
-      stock: req.body.stock,
-      seller: userId, // Use the seller ID from JWT token
-      price: req.body.price
-    };
+  let listing =null;
+  if(req.body.disabled === "true") {
+      listing = {
+          title: req.body.title,
+          brand: req.body.brand,
+          image: req.body.image,
+          stock: req.body.stock,
+          seller: userId, // Use the seller ID from JWT token
+          price: req.body.price
 
+      };
+  } else {
+         listing = {
+            title: req.body.title,
+            brand: req.body.brand,
+            image: req.body.image,
+            stock: req.body.stock,
+            seller: userId, // Use the seller ID from JWT token
+            price: req.body.price,
+            disabled: "",
+        };
+  }
+
+    try {
  let phone =await db.collection("Phone").insertOne(listing);
-     res.status(200).send("Listing created");
+    const passid ={ id :phone.insertedId};
+
+     res.status(200).json(passid);
      console.log( "create phone success");
     } catch (error) {
       console.error(error);
-      res.status(500).json({message: "Internal server error"});
+        res.status(500).json({ error: "Internal server error" });
+        return;
+
     }
   });
 
@@ -266,6 +285,13 @@ app.get("/api/fetchlistings", async (req, res) => {
       const userId = decoded.userId;
 
         const listings = await db.collection("Phone").find({seller: userId}).toArray();
+        listings.forEach((listing) => {
+            if (listing.disabled) {
+                listing.disabled = "false";
+            } else if(!listing.disabled) {
+                listing.disabled = "true";
+            }
+        });
         res.json(listings);
 
         console.log("fetch phone success");
@@ -328,19 +354,19 @@ app.post("/api/change_password_success", async (req, res) => {
 
 app.put('/api/listings/toggle', async (req, res) => {
   const id = req.body.id;
- const enabled = req.body.enabled;
-console.log(id);
-console.log(enabled);
+ const disabled = req.body.disabled;
+// console.log(id);
+// console.log(disabled);
 
  try{  const Phone = await db
      .collection("Phone")
      .findOne({ _id: new ObjectId(id) });
 
      if (Phone) {
-         if (enabled==='true') {
+         if (disabled==='true') {
              // 如果 enabled 为 true，则删除 disabled 字段
              await db.collection("Phone").updateOne({ _id: new ObjectId(id) }, { $unset: { disabled: "" } });
-         } else if (enabled==="false"){
+         } else if (disabled==="false"){
              await db.collection("Phone").updateOne({ _id: new ObjectId(id) }, { $set: { disabled: "" } });
          }
 
@@ -358,6 +384,7 @@ console.log(enabled);
 
 app.delete('/api/deletelistings/:id', async (req, res) => {
     const id = req.params.id;
+    console.log("delete id is"+id);
 
     try {
         const result = await db.collection('Phone').deleteOne({ _id: new ObjectId(id) });
@@ -381,24 +408,3 @@ app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
 
-// async function sendResetPasswordEmail(email, resetToken) {
-//   // 创建一个 nodemailer 传输器
-//   const transporter = nodemailer.createTransport({
-//     service: "gmail",
-//     auth: {
-//       user: "x@gmail.com",
-//       pass: "password",
-//     },
-//   });
-//
-//   // 设置电子邮件选项
-//   const mailOptions = {
-//     from: "your-email@gmail.com",
-//     to: email,
-//     subject: "Password Reset Request",
-//     text: `Click the following link to reset your password: http://localhost:3000/reset-password/${resetToken}`,
-//   };
-//
-//   // 发送电子邮件
-//   await transporter.sendMail(mailOptions);
-// }

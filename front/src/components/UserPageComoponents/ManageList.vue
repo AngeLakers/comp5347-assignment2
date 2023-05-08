@@ -44,7 +44,7 @@
       <el-table-column prop="stock" label="Stock"></el-table-column>
       <el-table-column label="Status">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.enabled" active-value="true" inactive-value="false"
+          <el-switch v-model="scope.row.disabled" active-value="true" inactive-value="false"
                      @change="toggleListing(scope.row)"></el-switch>
         </template>
       </el-table-column>
@@ -58,7 +58,7 @@
 </template>
 <script>
 
-import axios from 'axios';
+
 
 export default {
   data() {
@@ -69,7 +69,7 @@ export default {
         image: '',
         stock: 0,
         price: 0,
-        enabled: true,
+        disabled: true,
       },
       rules: {
         title: [{required: true, message: 'Please enter the title', trigger: 'blur'}],
@@ -92,13 +92,15 @@ export default {
         if (!valid) {
           return;
         }
- const newphone = {
+       let newphone = {
           title: this.form.title,
           brand: this.form.brand,
           image: this.form.image,
           stock: this.form.stock,
-          price: this.form.price
-        };
+          price: this.form.price,
+          disabled: true,
+       };
+
 
 
 
@@ -113,6 +115,8 @@ export default {
               message: "Profile updated successfully",
 
             });
+            newphone._id = response.data.id;
+            console.log(response.data.id);
             this.listings.push(newphone);
             this.$refs.form.resetFields();
           }else{
@@ -135,11 +139,11 @@ export default {
     },
     async toggleListing(row) {
       const id = row._id;
-      const enabled = row.enabled;
+      const disabled = row.disabled;
       console.log(id);
       try {
 
-        const response =await this.putRequest(`/api/listings/toggle`, {id ,enabled});
+        const response =await this.putRequest(`/api/listings/toggle`, {id ,disabled});
 
         response.status == 200 ? this.$message({
           type: "success",
@@ -152,7 +156,7 @@ export default {
       } catch (error) {
         console.error(error);
         // 如果更新失败，我们需要还原开关状态
-       row.enabled = !row.enabled;
+       row.disabled = !row.disabled;
         // 显示错误消息
         this.$message.error('Failed to toggle listing');
       }
@@ -160,6 +164,7 @@ export default {
     },
     async deleteListing(listing) {
       try {
+
         const response =await this.deleteRequest(`/api/deletelistings/${listing._id}`,null);
         response.status == 200 ? this.$message({
           type: "success",
