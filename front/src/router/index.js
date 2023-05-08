@@ -8,6 +8,9 @@ import ForgetPassword from "../components/ForgetPassword";
 import ManageList from "../components/UserPageComoponents/ManageList";
 
 import ResetPassword from "../components/ResetPassword";
+import Home from "../components/Home.vue";
+import Search from "../components/Search.vue";
+import shop from "../components/Shop.vue";
 
 Vue.use(Router)
 
@@ -61,7 +64,26 @@ export default new Router({
 
     {path: '/userPage/changePassword',
       name: 'resetPassword',
-      component: ResetPassword}
+      component: ResetPassword
+    },
+
+    {
+      path: '/home',
+      name: 'home',
+      component: Home
+    },
+
+    {
+      path: '/search',
+      name: 'search',
+      component: Search
+    },
+
+    {
+      path: '/shop',
+      name: 'shop',
+      component: shop
+    },
 
 
   ]
