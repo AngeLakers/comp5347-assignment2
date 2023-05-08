@@ -41,7 +41,7 @@ export const getRequest = (url,  params) => {
 }
 
 export const deleteRequest = (url, params) => {
-  return axios({
+  return my_axios({
     method: 'delete',
     url: `${url}`,
     data: params
