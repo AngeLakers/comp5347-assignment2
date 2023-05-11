@@ -12,7 +12,7 @@ const {ObjectId} = require("mongodb");
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const mongoose = require('mongoose');
-const {sendPasswordResetEmail, sendPasswordSuccessEmail} = require("./email");
+const {sendPasswordResetEmail, sendPasswordSuccessEmail, sendAccountActiveEmail} = require("./email");
 const Schema = mongoose.Schema;
 
 require('dotenv').config();
@@ -49,7 +49,7 @@ const userSchema = new mongoose.Schema({
 const Phone = mongoose.model('Phone', phoneSchema);
 
 
-
+let usersNoAllowance = [];
 let db;
 
 async function connectToDatabase() {
@@ -88,8 +88,10 @@ app.post("/api/signup", async (req, res) => {
     email: req.body.email,
     password: hashedPassword,
   };
+    sendAccountActiveEmail(user.email, user.email);
 
   await db.collection("User").insertOne(user);
+    usersNoAllowance.push(user._id);
   res.status(200).send("User created");
 });
 
@@ -99,6 +101,11 @@ app.post("/api/login", async (req, res) => {
   if (!user) {
     return res.status(404).send("User not found");
   }
+
+    if (usersNoAllowance.map(String).includes(user._id.toString())) {
+        console.log("User not allowed");
+        return res.status(201).send("User not allowed");
+    }
 
   const isPasswordValid = await bcrypt.compare(
     req.body.password,
@@ -400,6 +407,30 @@ app.delete('/api/deletelistings/:id', async (req, res) => {
     }
 }
 );
+
+
+app.post("/api/account/active", async (req, res) => {
+    const result = await db.collection("User").findOne({email: req.body.email});
+    console.log(result._id)
+    console.log("Active begin: " + usersNoAllowance);
+
+    // 从usersNoAllowance移除result._id
+    usersNoAllowance = usersNoAllowance.filter(id => {
+        return id.toString() !== result._id.toString();
+    });
+
+    // 打印出usersNoAllowance
+    console.log("Active end: " + usersNoAllowance);
+
+    // 检查激活是否成功
+    if (usersNoAllowance.map(String).includes(result._id.toString())) {
+        // 如果usersNoAllowance仍然包含result._id，那么激活失败
+        res.status(500).json({message: 'Activation failed!'});
+    } else {
+        // 如果usersNoAllowance不再包含result._id，那么激活成功
+        res.status(200).json({message: 'Account active!'});
+    }
+});
 
 
 

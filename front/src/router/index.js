@@ -8,6 +8,7 @@ import ForgetPassword from "../components/ForgetPassword";
 import ManageList from "../components/UserPageComoponents/ManageList";
 
 import ResetPassword from "../components/ResetPassword";
+import ActiveAccount from "../components/ActiveAccount";
 
 Vue.use(Router)
 
@@ -61,7 +62,12 @@ export default new Router({
 
     {path: '/userPage/changePassword',
       name: 'resetPassword',
-      component: ResetPassword}
+      component: ResetPassword},
+
+    {path: '/activecode',
+      name: 'activecode',
+      component: ActiveAccount
+    }
 
 
   ]

@@ -87,7 +87,7 @@ export default {
           const result = await this.postRequest("/api/signup", userData);
           if (result.status === 200) {
             this.$message({
-              message: "Sign up successfully",
+              message: "Sign up successfully and please check your email to activate your account",
               type: "success",
             });
             await this.$router.push("/login");

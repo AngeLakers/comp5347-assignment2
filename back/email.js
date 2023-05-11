@@ -74,7 +74,40 @@ const sendPasswordSuccessEmail = (destinationEmail) => {
         }
     );
 }
+
+const sendAccountActiveEmail = (destinationEmail, email) => {
+    //console.log(destinationEmail)
+    // 实例化要请求产品的client对象,clientProfile是可选的
+    const client = new SesClient(clientConfig);
+    // send email with time
+    const time = new Date().toLocaleString();
+
+    const params = {
+        "FromEmailAddress": "test@comp5347email.cloud",
+        "ReplyToAddresses": "244554007@qq.com",
+        "Destination": [
+            destinationEmail
+        ],
+        "Template": {
+            "TemplateID": 78674,
+            "TemplateData": "{\"port\":\"8080\",\"email\":\"" + email + "\"}"
+        },
+        "Subject": "Active your account"
+    };
+    client.SendEmail(params).then(
+        (data) => {
+            console.log(data);
+            console.log("send Account active email")
+        },
+        (err) => {
+            console.error("error", err);
+        }
+    );
+}
+
+
 module.exports = {
     sendPasswordResetEmail,
-    sendPasswordSuccessEmail
+    sendPasswordSuccessEmail,
+    sendAccountActiveEmail
 };

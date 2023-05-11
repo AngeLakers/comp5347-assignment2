@@ -56,6 +56,15 @@ export default {
         this.loginLoading = true;
         const response = await this.postRequest("/api/login", this.loginData);
         const token = response.data.token;
+
+        if (response.status === 201) {
+          this.$message({
+            message: "Please verify your email address",
+            type: "warning",
+          });
+          return
+        }
+
         sessionStorage.setItem('email', this.loginData.username);
         sessionStorage.setItem("token", token);
 

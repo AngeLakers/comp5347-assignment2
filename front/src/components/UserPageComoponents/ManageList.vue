@@ -98,7 +98,7 @@ export default {
           image: this.form.image,
           stock: this.form.stock,
           price: this.form.price,
-          disabled: true,
+          disabled: null,
        };
 
 
@@ -115,6 +115,7 @@ export default {
               message: "Profile updated successfully",
 
             });
+            newphone["disabled"] = "true";
             newphone._id = response.data.id;
             console.log(response.data.id);
             this.listings.push(newphone);
