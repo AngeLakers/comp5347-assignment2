@@ -9,6 +9,9 @@ import ManageList from "../components/UserPageComoponents/ManageList";
 
 import ResetPassword from "../components/ResetPassword";
 import ActiveAccount from "../components/ActiveAccount";
+import Home from "../components/Home.vue";
+import Search from "../components/Search.vue";
+import shop from "../components/Shop.vue";
 
 Vue.use(Router)
 
@@ -67,7 +70,27 @@ export default new Router({
     {path: '/activecode',
       name: 'activecode',
       component: ActiveAccount
-    }
+
+
+    },
+
+    {
+      path: '/home',
+      name: 'home',
+      component: Home
+    },
+
+    {
+      path: '/search',
+      name: 'search',
+      component: Search
+    },
+
+    {
+      path: '/shop',
+      name: 'shop',
+      component: shop
+    },
 
 
   ]
