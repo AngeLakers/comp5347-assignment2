@@ -197,8 +197,10 @@ try {
         .collection("User")
         .findOne({ email: req.body.email });
 
-    if (existingUser) {
+
+    if (existingUser && existingUser._id.toString() !== userId) {
         return res.status(201).send("Email address is already in use");
+        console.log("201");
     }
 
 
@@ -207,8 +209,10 @@ try {
       { _id: new ObjectId(userId) },{$set:{firstname:req.body.firstName, lastname:req.body.lastName, email: req.body.email}});
   if (result.modifiedCount === 1) {
     res.status(200).json( {success: true});
+      console.log("200");
   } else {
     res.status(404).json({message: "Update failed"});
+      console.log("404");
   }
 } catch (error) {
     console.error(error);

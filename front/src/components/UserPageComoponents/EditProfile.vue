@@ -87,6 +87,7 @@ let user = response.data;
 
         if (response1.status !== 200) {
           throw new Error("Error updating profile");
+
         }else{
           this.$message({
             type: "success",
