@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- 内容部分 -->
+    <!-- content -->
         <el-card class="box-card">
           <div class="box">
             <div class="left">

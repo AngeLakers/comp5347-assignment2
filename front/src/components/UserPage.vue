@@ -1,8 +1,8 @@
 <template>
 
     <div>
-      <div style="font-size:26px;text-align: left">
-        <span @click="$router.push({name:'home'})"><</span>
+      <div style="font-size:30px; text-align: left">
+        <span @click="$router.push({name:'home'})">Back to home</span>
       </div>
 
       <el-tabs v-model="activeTab">

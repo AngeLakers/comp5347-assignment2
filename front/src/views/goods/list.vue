@@ -37,7 +37,9 @@
   },
     methods:{
       async init(param){
-      this.list = await searchList(param)
+        if(param){
+          this.list = await searchList(param)
+        }
       },
 
     }
