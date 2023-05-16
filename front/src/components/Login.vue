@@ -14,13 +14,11 @@
     </el-form-item>
 
 
-
   </el-form>
     <div class="forget-password-link">
       <router-link to="/forgetPassword">Forgot your password?</router-link>
       <el-button type="primary" @click="registerButtonClicked">Register</el-button>
     </div>
-
 
 
   </div>

@@ -1,4 +1,3 @@
-// models\goodsSchema.js
 const mongoose = require('mongoose')
 const fs = require('fs');
 const path = require('path');
@@ -17,7 +16,7 @@ const GoodsSchema = mongoose.Schema({
 })
 const MoSchema = mongoose.model("phones", GoodsSchema);
 (async () => {
-  // 在这里使用 await
+  //await here
 const data = await fs.promises.readFile(path.join(__dirname, '..', 'public', 'data', 'phonelisting.json'), 'utf-8');
 const goodsData=JSON.parse(data);
  const result = await MoSchema.find();

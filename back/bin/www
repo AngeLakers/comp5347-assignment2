@@ -9,7 +9,7 @@ var debug = require('debug')('app:server');
 var http = require('http');
 const os = require('os');
 
-//连接数据库
+//connect to Database
 require('../config/db')
 // function getWiFiIpAddress() {
 //   const interfaces = os.networkInterfaces();

@@ -10,12 +10,12 @@
               <div class="nameBox">
                 <p>Title: {{ obj.title }}</p>
                 <p>Brand: {{ obj.brand }}</p>
-                <p>Available stocl: {{ obj.stock }}</p>
+                <p>Available stock: {{ obj.stock }}</p>
                 <p>Seller's name:{{ obj.seller }}</p>
               </div>
               <div class="PriceBox">
                 <p class="price">Price: {{ obj.price }}</p>
-                <div v-if="token">
+                <div>
                   Add to the card:
                   <el-button type="text" @click="handleAdd"
                     >add</el-button
@@ -39,7 +39,7 @@
                 v-for="item in obj.reviews"
                 :key="item._id"
               >
-                <div>Reviewer name: {{ item.reviewer }}</div>
+                <div>Reviewer name: {{ item.reviewer?item.reviewer.lastname +' '+item.reviewer.firstname:""}}</div>
                 <div>Rating: {{ item.rating }}</div>
                 <div>Comment(within 200 characters): {{ item.comment }}</div>
               </div>
@@ -50,7 +50,7 @@
     <el-dialog title="add to the cart" :visible.sync="dialogVisible" width="30%">
       <div>
         <el-form ref="form" :model="form" label-width="80px">
-          <el-form-item label="quantity">
+          <el-form-item label="Num">
             <el-input-number v-model="form.num"  :min="1" :max="obj.stock" ></el-input-number>
           </el-form-item>
         </el-form>
@@ -75,12 +75,10 @@ export default {
       addList:[], // 存储增加的数据数组
       form: {
         num: 1
-      },
-      token:""
+      }
     };
   },
   created() {
-    this.token=  sessionStorage.getItem("token");
     this.total = JSON.parse(localStorage.getItem('total'))
     this.obj = JSON.parse(localStorage.getItem("phoneInfo"))
     if (localStorage.getItem("addList")) {

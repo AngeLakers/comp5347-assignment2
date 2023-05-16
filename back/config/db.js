@@ -1,6 +1,5 @@
-// 新建config/db.js
 /**
- * 数据库连接
+ * Database connection succeeded
  */
 const mongoose = require('mongoose')
 const config = require('./dev')
@@ -21,9 +20,9 @@ if (process.env.NODE_ENV === 'development') {
 const db = mongoose.connection;
 
 db.on('error', () => {
-    log4js.error('***数据库连接失败***')
+    log4js.error('***Database connection failed***')
 })
 
 db.on('open', () => {
-    log4js.info('***数据库连接成功***')
+    log4js.info('***Database connection succeeded***')
 })
