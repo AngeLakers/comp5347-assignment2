@@ -1,6 +1,10 @@
 <template>
 
     <div>
+      <div style="font-size:26px;text-align: left">
+        <span @click="$router.push({name:'home'})"><</span>
+      </div>
+
       <el-tabs v-model="activeTab">
         <el-tab-pane label="Edit Profile">
           <edit-profile></edit-profile>

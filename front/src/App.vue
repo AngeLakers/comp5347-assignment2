@@ -18,6 +18,17 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+}
+body{
+  margin: 0;
+  background-color: #f5f5f5;
+  font-size: 14px;
+}
+ul,li{
+  list-style: none;
+  padding: 0;
+}
+*{
+  box-sizing: border-box;
 }
 </style>
